@@ -31,6 +31,8 @@ import android.view.ViewConfiguration;
 
 public class DragItemRecyclerView extends RecyclerView implements AutoScroller.AutoScrollListener {
 
+    private PageHolder pageHolder;
+
     public interface DragItemListener {
         void onDragStarted(int itemPosition, float x, float y);
 
@@ -266,7 +268,7 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
     }
 
     private void updateDragPositionAndScroll() {
-        View view = findChildView(mDragItem.getX(), mDragItem.getY());
+        View view = findChildView(mDragItem.getX(), mDragItem.getY() - pageHolder.getTopDistance());
         int newPos = getChildLayoutPosition(view);
         if (newPos == NO_POSITION || view == null) {
             return;
@@ -318,7 +320,6 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
         int right = mClipToPadding ? getWidth() - getPaddingRight() : getWidth();
         ViewHolder lastChild = findViewHolderForLayoutPosition(mAdapter.getItemCount() - 1);
         ViewHolder firstChild = findViewHolderForLayoutPosition(0);
-
         // Check if first or last item has been reached
         if (layoutManager.getOrientation() == LinearLayoutManager.VERTICAL) {
             if (lastChild != null && lastChild.itemView.getBottom() <= bottom) {
@@ -338,9 +339,9 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
 
         // Start auto scroll if at the edge
         if (layoutManager.getOrientation() == LinearLayoutManager.VERTICAL) {
-            if (mDragItem.getY() > getHeight() - view.getHeight() / 2 && !lastItemReached) {
+            if (mDragItem.getY() > getHeight() + pageHolder.getBottomDistance() - view.getHeight() / 2 && !lastItemReached) {
                 mAutoScroller.startAutoScroll(AutoScroller.ScrollDirection.UP);
-            } else if (mDragItem.getY() < view.getHeight() / 2 && !firstItemReached) {
+            } else if (mDragItem.getY() < pageHolder.getTopDistance() + view.getHeight() / 2 && !firstItemReached) {
                 mAutoScroller.startAutoScroll(AutoScroller.ScrollDirection.DOWN);
             } else {
                 mAutoScroller.stopAutoScroll();
@@ -357,6 +358,11 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
     }
 
     boolean startDrag(PageHolder holder, View itemView, long itemId, float x, float y) {
+
+
+        pageHolder = holder;
+
+
         int dragItemPosition = mAdapter.getPositionForItemId(itemId);
         if (!mDragEnabled || (mCanNotDragAboveTop && dragItemPosition == 0)
                 || (mCanNotDragBelowBottom && dragItemPosition == mAdapter.getItemCount() - 1)) {

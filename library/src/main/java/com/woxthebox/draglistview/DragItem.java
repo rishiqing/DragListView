@@ -28,9 +28,6 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 
-import static android.R.attr.startX;
-import static android.R.attr.startY;
-
 public class DragItem {
     protected static final int ANIMATION_DURATION = 250;
     private View mDragView;
@@ -119,7 +116,7 @@ public class DragItem {
         float startX = startFromView.getX() - (mDragView.getMeasuredWidth() - startFromView.getMeasuredWidth()) / 2 + mDragView
                 .getMeasuredWidth() / 2;
         float startY = startFromView.getY() - (mDragView.getMeasuredHeight() - startFromView.getMeasuredHeight()) / 2 + mDragView
-                .getMeasuredHeight() / 2 + holder.getDistance();
+                .getMeasuredHeight() / 2 + holder.getTopDistance();
 
 
         if (mSnapToTouch) {
@@ -147,7 +144,7 @@ public class DragItem {
         float endX = endToView.getX() - (mDragView.getMeasuredWidth() - endToView.getMeasuredWidth()) / 2 + mDragView
                 .getMeasuredWidth() / 2;
         float endY = endToView.getY() - (mDragView.getMeasuredHeight() - endToView.getMeasuredHeight()) / 2 + mDragView
-                .getMeasuredHeight() / 2 + holder.getDistance();
+                .getMeasuredHeight() / 2 + holder.getTopDistance();
         PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("X", mPosX, endX);
         PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat("Y", mPosY, endY);
         ObjectAnimator anim = ObjectAnimator.ofPropertyValuesHolder(this, pvhX, pvhY);
