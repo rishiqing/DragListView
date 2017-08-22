@@ -37,7 +37,8 @@ public abstract class DragPager {
         return pageHolder;
     }
 
-    public void initRecycler(final BoardView boardView, DragItemAdapter adapter, final DragItemRecyclerView recyclerView) {
+    public void initRecycler(final BoardView boardView, DragItemAdapter adapter, final PageHolder holder) {
+        final DragItemRecyclerView recyclerView = holder.recyclerView;
         recyclerView.setHorizontalScrollBarEnabled(false);
         recyclerView.setVerticalScrollBarEnabled(false);
         recyclerView.setMotionEventSplittingEnabled(false);
@@ -51,8 +52,8 @@ public abstract class DragPager {
             public void onDragStarted(int itemPosition, float x, float y) {
                 boardView.mDragStartColumn = boardView.getColumnOfList(recyclerView);
                 boardView.mDragStartRow = itemPosition;
-                boardView.mCurrentRecyclerView = recyclerView;
-                boardView.mDragItem.setOffset(((View) boardView.mCurrentRecyclerView.getParent()).getX(), boardView.mCurrentRecyclerView.getY());
+                boardView.mCurrentHolder = holder;
+                boardView.mDragItem.setOffset(holder.root.getX(), holder.recyclerView.getY());
                 if (boardView.mBoardListener != null) {
                     boardView.mBoardListener.onItemDragStarted(boardView.mDragStartColumn, boardView.mDragStartRow);
                 }
@@ -85,7 +86,7 @@ public abstract class DragPager {
         adapter.setDragStartedListener(new DragItemAdapter.DragStartCallback() {
             @Override
             public boolean startDrag(View itemView, long itemId) {
-                return recyclerView.startDrag(itemView, itemId, boardView.getListTouchX(recyclerView), boardView.getListTouchY(recyclerView));
+                return recyclerView.startDrag(itemView, itemId, boardView.getListTouchX(holder), boardView.getListTouchY(holder));
             }
 
             @Override

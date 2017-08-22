@@ -52,7 +52,7 @@ public class MyDragPager extends DragPager {
         ((TextView) pageHolder.root.findViewById(R.id.item_count)).setText("");
         pageHolder.recyclerView = (DragItemRecyclerView) pageHolder.root.findViewById(R.id.recycler);
         ItemAdapter listAdapter = new ItemAdapter(data.get(index), R.layout.column_item, R.id.item_layout, true);
-        initRecycler(boardView, listAdapter, pageHolder.recyclerView);
+        initRecycler(boardView, listAdapter, pageHolder);
         return pageHolder;
     }
 

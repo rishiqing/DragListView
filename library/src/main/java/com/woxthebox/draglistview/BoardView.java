@@ -31,10 +31,10 @@ import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.Scroller;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import static android.R.id.list;
 import static android.support.v7.widget.RecyclerView.NO_POSITION;
 
 public class BoardView extends HorizontalScrollView implements AutoScroller.AutoScrollListener {
@@ -56,7 +56,8 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     private FrameLayout mRootLayout;
     protected LinearLayout mColumnLayout;
     protected ArrayList<PageHolder> mLists = new ArrayList<>();
-    protected DragItemRecyclerView mCurrentRecyclerView;
+//    protected DragItemRecyclerView mCurrentRecyclerView;
+    protected PageHolder mCurrentHolder;
     protected DragItem mDragItem;
     protected BoardListener mBoardListener;
     private boolean mSnapToColumnWhenScrolling = true;
@@ -165,9 +166,9 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL:
                     mAutoScroller.stopAutoScroll();
-                    mCurrentRecyclerView.onDragEnded();
+                    mCurrentHolder.recyclerView.onDragEnded();
                     if (snapToColumnWhenScrolling()) {
-                        scrollToColumn(getColumnOfList(mCurrentRecyclerView), true);
+                        scrollToColumn(getColumnOfList(mCurrentHolder.recyclerView), true);
                     }
                     invalidate();
                     break;
@@ -208,7 +209,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
             // If auto scrolling at the same time as the scroller is running,
             // then update the drag item position to prevent stuttering item
             if (mAutoScroller.isAutoScrolling()) {
-                mDragItem.setPosition(getListTouchX(mCurrentRecyclerView), getListTouchY(mCurrentRecyclerView));
+                mDragItem.setPosition(getListTouchX(mCurrentHolder), getListTouchY(mCurrentHolder));
             }
 
             ViewCompat.postInvalidateOnAnimation(this);
@@ -232,7 +233,10 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     @Override
     public void onAutoScrollColumnBy(int columns) {
         if (isDragging()) {
-            DragItemRecyclerView currentList = getCurrentRecyclerView(getWidth() / 2 + getScrollX());
+
+
+            PageHolder holder = getCurrentRecyclerView(getWidth() / 2 + getScrollX());
+            DragItemRecyclerView currentList = holder.recyclerView;
             int newColumn = getColumnOfList(currentList) + columns;
             if (columns != 0 && newColumn >= 0 && newColumn < dragPager.getPagerCount()) {
                 scrollToColumn(newColumn, true);
@@ -245,16 +249,17 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
     private void updateScrollPosition() {
         // Updated event to scrollview coordinates
-        DragItemRecyclerView currentList = getCurrentRecyclerView(mTouchX + getScrollX());
-        if (mCurrentRecyclerView != currentList) {
-            int oldColumn = getColumnOfList(mCurrentRecyclerView);
+        PageHolder holder = getCurrentRecyclerView(mTouchX + getScrollX());
+        DragItemRecyclerView currentList = holder.recyclerView;
+        if (mCurrentHolder.recyclerView != currentList) {
+            int oldColumn = getColumnOfList(mCurrentHolder.recyclerView);
             int newColumn = getColumnOfList(currentList);
-            long itemId = mCurrentRecyclerView.getDragItemId();
-            Object item = mCurrentRecyclerView.removeDragItemAndEnd();
+            long itemId = mCurrentHolder.recyclerView.getDragItemId();
+            Object item = mCurrentHolder.recyclerView.removeDragItemAndEnd();
             if (item != null) {
-                mCurrentRecyclerView = currentList;
-                mCurrentRecyclerView.addDragItemAndStart(getListTouchY(mCurrentRecyclerView), item, itemId);
-                mDragItem.setOffset(((View) mCurrentRecyclerView.getParent()).getLeft(), mCurrentRecyclerView.getTop());
+                mCurrentHolder = holder;
+                mCurrentHolder.recyclerView.addDragItemAndStart(getListTouchY(mCurrentHolder), item, itemId);
+                mDragItem.setOffset(mCurrentHolder.root.getLeft(), mCurrentHolder.recyclerView.getTop());
 
                 if (mBoardListener != null) {
                     mBoardListener.onItemChangedColumn(oldColumn, newColumn);
@@ -263,7 +268,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         }
 
         // Updated event to list coordinates
-        mCurrentRecyclerView.onDragging(getListTouchX(mCurrentRecyclerView), getListTouchY(mCurrentRecyclerView));
+        mCurrentHolder.recyclerView.onDragging(getListTouchX(mCurrentHolder), getListTouchY(mCurrentHolder));
 
         float scrollEdge = getResources().getDisplayMetrics().widthPixels * 0.14f;
         if (mTouchX > getWidth() - scrollEdge && getScrollX() < mColumnLayout.getWidth()) {
@@ -276,22 +281,22 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         invalidate();
     }
 
-    public float getListTouchX(DragItemRecyclerView list) {
-        return mTouchX + getScrollX() - ((View) list.getParent()).getLeft();
+    public float getListTouchX(PageHolder holder) {
+        return mTouchX + getScrollX() - (holder.root).getLeft();
     }
 
-    float getListTouchY(DragItemRecyclerView list) {
-        return mTouchY - list.getTop();
+    float getListTouchY(PageHolder holder) {
+        return mTouchY - holder.recyclerView.getTop();
     }
 
-    private DragItemRecyclerView getCurrentRecyclerView(float x) {
+    private PageHolder getCurrentRecyclerView(float x) {
         for (PageHolder list : mLists) {
             View parent = list.root;
             if (parent.getLeft() <= x && parent.getRight() > x) {
-                return list.recyclerView;
+                return list;
             }
         }
-        return mCurrentRecyclerView;
+        return mCurrentHolder;
     }
 
     protected int getColumnOfList(DragItemRecyclerView list) {
@@ -341,7 +346,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     }
 
     private boolean isDragging() {
-        return mCurrentRecyclerView != null && mCurrentRecyclerView.isDragging();
+        return mCurrentHolder != null && mCurrentHolder.recyclerView.isDragging();
     }
 
     public RecyclerView getRecyclerView(int column) {
@@ -613,14 +618,14 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
             return cachePage.get(index);
         }
         PageHolder pageHolder = dragPager.addColumnList(index);
-        if (index == 0) {
-            TextView textView = new TextView(getContext());
-            textView.setLayoutParams(new FrameLayout.LayoutParams(mColumnWidth, FrameLayout.LayoutParams.MATCH_PARENT));
-            mColumnLayout.addView(textView, index);
-        }
+//        if (index == 0) {
+//            TextView textView = new TextView(getContext());
+//            textView.setLayoutParams(new FrameLayout.LayoutParams(mColumnWidth, FrameLayout.LayoutParams.MATCH_PARENT));
+//            mColumnLayout.addView(textView, index);
+//        }
         pageHolder.root.setLayoutParams(new FrameLayout.LayoutParams(mColumnWidth, FrameLayout.LayoutParams.MATCH_PARENT));
         mLists.add(pageHolder);
-        mColumnLayout.addView(pageHolder.root, index + 1);
+        mColumnLayout.addView(pageHolder.root, index);
         cachePage.put(index, pageHolder);
         return pageHolder;
     }
