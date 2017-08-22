@@ -19,6 +19,7 @@ package com.woxthebox.draglistview;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -31,7 +32,6 @@ import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.Scroller;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -287,6 +287,9 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     }
 
     float getListTouchY(PageHolder holder) {
+
+
+
         return mTouchY - holder.recyclerView.getTop();
     }
 
@@ -619,11 +622,11 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
             return cachePage.get(index);
         }
         PageHolder pageHolder = dragPager.addColumnList(index);
-        if (index == 0) {
-            TextView textView = new TextView(getContext());
-            textView.setLayoutParams(new FrameLayout.LayoutParams(mColumnWidth, FrameLayout.LayoutParams.MATCH_PARENT));
-            mColumnLayout.addView(textView, index);
-        }
+//        if (index == 0) {
+//            TextView textView = new TextView(getContext());
+//            textView.setLayoutParams(new FrameLayout.LayoutParams(mColumnWidth, FrameLayout.LayoutParams.MATCH_PARENT));
+//            mColumnLayout.addView(textView, index);
+//        }
         pageHolder.root.setLayoutParams(new FrameLayout.LayoutParams(mColumnWidth, FrameLayout.LayoutParams.MATCH_PARENT));
         mLists.add(pageHolder);
         mColumnLayout.addView(pageHolder.root, index);
@@ -633,6 +636,6 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
 
     public View getItemParentView(PageHolder holder) {
-        return  holder.root;
+        return holder.root;
     }
 }

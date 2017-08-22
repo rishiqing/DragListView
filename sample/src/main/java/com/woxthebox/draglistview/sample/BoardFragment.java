@@ -17,10 +17,10 @@
 package com.woxthebox.draglistview.sample;
 
 import android.animation.ObjectAnimator;
+import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -37,7 +37,6 @@ import android.widget.Toast;
 
 import com.woxthebox.draglistview.BoardView;
 import com.woxthebox.draglistview.DragItem;
-import com.woxthebox.draglistview.DragPager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +66,7 @@ public class BoardFragment extends Fragment {
         mBoardView.setSnapToColumnWhenDragging(true);
         mBoardView.setSnapDragItemToTouch(true);
         mBoardView.setCustomDragItem(new MyDragItem(getActivity(), R.layout.column_item));
-        dragPager = new MyDragPager(getContext());
+        dragPager = new MyDragPager(getActivity());
         mBoardView.setDragPager(dragPager);
 
         mBoardView.setBoardListener(new BoardView.BoardListener() {
@@ -103,7 +102,6 @@ public class BoardFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Board");
         List<ArrayList<Pair<Long, String>>> data = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
             data.add(addColumnList());
@@ -149,12 +147,15 @@ public class BoardFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    String text = "Item ";
+
     private ArrayList<Pair<Long, String>> addColumnList() {
         final ArrayList<Pair<Long, String>> mItemArray = new ArrayList<>();
         int addItems = 15;
         for (int i = 0; i < addItems; i++) {
             long id = sCreatedItems++;
-            mItemArray.add(new Pair<>(id, "Item " + id));
+            text += "aonOptionsItemSelectedonOptionsItemSelected";
+            mItemArray.add(new Pair<>(id, text + id));
         }
 
         return mItemArray;
