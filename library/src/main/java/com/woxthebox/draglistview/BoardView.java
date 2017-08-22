@@ -31,6 +31,7 @@ import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.Scroller;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -154,7 +155,6 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         if (mLists.size() == 0) {
             return false;
         }
-
         mTouchX = event.getX();
         mTouchY = event.getY();
         if (isDragging()) {
@@ -167,7 +167,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL:
                     mAutoScroller.stopAutoScroll();
-                    mCurrentHolder.recyclerView.onDragEnded();
+                    mCurrentHolder.recyclerView.onDragEnded(mCurrentHolder);
                     if (snapToColumnWhenScrolling()) {
                         scrollToColumn(getColumnOfList(mCurrentHolder.recyclerView), true);
                     }
@@ -260,7 +260,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
             if (item != null) {
                 mCurrentHolder = holder;
                 mCurrentHolder.recyclerView.addDragItemAndStart(getListTouchY(mCurrentHolder), item, itemId);
-                mDragItem.setOffset( getItemParentView(mCurrentHolder).getLeft(), mCurrentHolder.recyclerView.getTop());
+                mDragItem.setOffset(getItemParentView(mCurrentHolder).getLeft(), mCurrentHolder.recyclerView.getTop());
 
                 if (mBoardListener != null) {
                     mBoardListener.onItemChangedColumn(oldColumn, newColumn);
@@ -619,11 +619,11 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
             return cachePage.get(index);
         }
         PageHolder pageHolder = dragPager.addColumnList(index);
-//        if (index == 0) {
-//            TextView textView = new TextView(getContext());
-//            textView.setLayoutParams(new FrameLayout.LayoutParams(mColumnWidth, FrameLayout.LayoutParams.MATCH_PARENT));
-//            mColumnLayout.addView(textView, index);
-//        }
+        if (index == 0) {
+            TextView textView = new TextView(getContext());
+            textView.setLayoutParams(new FrameLayout.LayoutParams(mColumnWidth, FrameLayout.LayoutParams.MATCH_PARENT));
+            mColumnLayout.addView(textView, index);
+        }
         pageHolder.root.setLayoutParams(new FrameLayout.LayoutParams(mColumnWidth, FrameLayout.LayoutParams.MATCH_PARENT));
         mLists.add(pageHolder);
         mColumnLayout.addView(pageHolder.root, index);
@@ -633,6 +633,6 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
 
     public View getItemParentView(PageHolder holder) {
-        return ((View) holder.recyclerView.getParent());
+        return  holder.root;
     }
 }

@@ -356,7 +356,7 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
         }
     }
 
-    boolean startDrag(View itemView, long itemId, float x, float y) {
+    boolean startDrag(PageHolder holder, View itemView, long itemId, float x, float y) {
         int dragItemPosition = mAdapter.getPositionForItemId(itemId);
         if (!mDragEnabled || (mCanNotDragAboveTop && dragItemPosition == 0)
                 || (mCanNotDragBelowBottom && dragItemPosition == mAdapter.getItemCount() - 1)) {
@@ -371,7 +371,7 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
         getParent().requestDisallowInterceptTouchEvent(false);
         mDragState = DragState.DRAG_STARTED;
         mDragItemId = itemId;
-        mDragItem.startDrag(itemView, x, y);
+        mDragItem.startDrag(holder, itemView, x, y);
         mDragItemPosition = dragItemPosition;
         updateDragPositionAndScroll();
 
@@ -404,7 +404,7 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
         invalidate();
     }
 
-    void onDragEnded() {
+    void onDragEnded(final PageHolder pageHolder) {
         // Need check because sometimes the framework calls drag end twice in a row
         if (mDragState == DragState.DRAG_ENDED) {
             return;
@@ -430,7 +430,7 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
                 final RecyclerView.ViewHolder holder = findViewHolderForAdapterPosition(mDragItemPosition);
                 if (holder != null) {
                     getItemAnimator().endAnimation(holder);
-                    mDragItem.endDrag(holder.itemView, new AnimatorListenerAdapter() {
+                    mDragItem.endDrag(pageHolder, holder.itemView, new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             holder.itemView.setAlpha(1);

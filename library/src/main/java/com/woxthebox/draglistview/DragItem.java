@@ -28,6 +28,9 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 
+import static android.R.attr.startX;
+import static android.R.attr.startY;
+
 public class DragItem {
     protected static final int ANIMATION_DURATION = 250;
     private View mDragView;
@@ -106,16 +109,18 @@ public class DragItem {
         mDragView.setVisibility(View.GONE);
     }
 
-    void startDrag(View startFromView, float touchX, float touchY) {
+    void startDrag(PageHolder holder, View startFromView, float touchX, float touchY) {
         show();
         onBindDragView(startFromView, mDragView);
         onMeasureDragView(startFromView, mDragView);
         onStartDragAnimation(mDragView);
 
+
         float startX = startFromView.getX() - (mDragView.getMeasuredWidth() - startFromView.getMeasuredWidth()) / 2 + mDragView
                 .getMeasuredWidth() / 2;
         float startY = startFromView.getY() - (mDragView.getMeasuredHeight() - startFromView.getMeasuredHeight()) / 2 + mDragView
-                .getMeasuredHeight() / 2;
+                .getMeasuredHeight() / 2 + holder.getDistance();
+
 
         if (mSnapToTouch) {
             mPosTouchDx = 0;
@@ -123,7 +128,6 @@ public class DragItem {
             setPosition(touchX, touchY);
             setAnimationDx(startX - touchX);
             setAnimationDY(startY - touchY);
-
             PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("AnimationDx", mAnimationDx, 0);
             PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat("AnimationDY", mAnimationDy, 0);
             ObjectAnimator anim = ObjectAnimator.ofPropertyValuesHolder(this, pvhX, pvhY);
@@ -137,13 +141,13 @@ public class DragItem {
         }
     }
 
-    void endDrag(View endToView, AnimatorListenerAdapter listener) {
+    void endDrag(PageHolder holder, View endToView, AnimatorListenerAdapter listener) {
         onEndDragAnimation(mDragView);
 
         float endX = endToView.getX() - (mDragView.getMeasuredWidth() - endToView.getMeasuredWidth()) / 2 + mDragView
                 .getMeasuredWidth() / 2;
         float endY = endToView.getY() - (mDragView.getMeasuredHeight() - endToView.getMeasuredHeight()) / 2 + mDragView
-                .getMeasuredHeight() / 2;
+                .getMeasuredHeight() / 2 + holder.getDistance();
         PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("X", mPosX, endX);
         PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat("Y", mPosY, endY);
         ObjectAnimator anim = ObjectAnimator.ofPropertyValuesHolder(this, pvhX, pvhY);

@@ -122,7 +122,7 @@ public class DragListView extends FrameLayout {
                     break;
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL:
-                    mRecyclerView.onDragEnded();
+//                    mRecyclerView.onDragEnded();
                     break;
             }
             return true;
@@ -131,7 +131,8 @@ public class DragListView extends FrameLayout {
     }
 
     private DragItemRecyclerView createRecyclerView() {
-        final DragItemRecyclerView recyclerView = (DragItemRecyclerView) LayoutInflater.from(getContext()).inflate(R.layout.drag_item_recycler_view, this, false);
+        View root = LayoutInflater.from(getContext()).inflate(R.layout.drag_item_recycler_view, this, false);
+        final DragItemRecyclerView recyclerView = (DragItemRecyclerView) root.findViewById(R.id.recycler);
         recyclerView.setMotionEventSplittingEnabled(false);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setVerticalScrollBarEnabled(false);
@@ -218,7 +219,7 @@ public class DragListView extends FrameLayout {
         adapter.setDragStartedListener(new DragItemAdapter.DragStartCallback() {
             @Override
             public boolean startDrag(View itemView, long itemId) {
-                return mRecyclerView.startDrag(itemView, itemId, mTouchX, mTouchY);
+                return mRecyclerView.startDrag(null, itemView, itemId, mTouchX, mTouchY);
             }
 
             @Override

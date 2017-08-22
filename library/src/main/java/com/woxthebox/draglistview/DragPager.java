@@ -86,7 +86,8 @@ public abstract class DragPager {
         adapter.setDragStartedListener(new DragItemAdapter.DragStartCallback() {
             @Override
             public boolean startDrag(View itemView, long itemId) {
-                return recyclerView.startDrag(itemView, itemId, boardView.getListTouchX(holder), boardView.getListTouchY(holder));
+                holder.measureListDistance();
+                return recyclerView.startDrag(holder, itemView, itemId, boardView.getListTouchX(holder), boardView.getListTouchY(holder));
             }
 
             @Override
