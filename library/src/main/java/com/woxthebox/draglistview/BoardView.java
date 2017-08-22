@@ -39,6 +39,7 @@ import static android.support.v7.widget.RecyclerView.NO_POSITION;
 
 public class BoardView extends HorizontalScrollView implements AutoScroller.AutoScrollListener {
 
+
     public interface BoardListener {
         void onItemDragStarted(int column, int row);
 
@@ -56,7 +57,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     private FrameLayout mRootLayout;
     protected LinearLayout mColumnLayout;
     protected ArrayList<PageHolder> mLists = new ArrayList<>();
-//    protected DragItemRecyclerView mCurrentRecyclerView;
+    //    protected DragItemRecyclerView mCurrentRecyclerView;
     protected PageHolder mCurrentHolder;
     protected DragItem mDragItem;
     protected BoardListener mBoardListener;
@@ -259,7 +260,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
             if (item != null) {
                 mCurrentHolder = holder;
                 mCurrentHolder.recyclerView.addDragItemAndStart(getListTouchY(mCurrentHolder), item, itemId);
-                mDragItem.setOffset(mCurrentHolder.root.getLeft(), mCurrentHolder.recyclerView.getTop());
+                mDragItem.setOffset( getItemParentView(mCurrentHolder).getLeft(), mCurrentHolder.recyclerView.getTop());
 
                 if (mBoardListener != null) {
                     mBoardListener.onItemChangedColumn(oldColumn, newColumn);
@@ -282,7 +283,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     }
 
     public float getListTouchX(PageHolder holder) {
-        return mTouchX + getScrollX() - (holder.root).getLeft();
+        return mTouchX + getScrollX() - getItemParentView(holder).getLeft();
     }
 
     float getListTouchY(PageHolder holder) {
@@ -631,4 +632,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     }
 
 
+    public View getItemParentView(PageHolder holder) {
+        return ((View) holder.recyclerView.getParent());
+    }
 }

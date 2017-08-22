@@ -4,27 +4,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <include layout="@layout/column_header" />
 
-    <include layout="@layout/column_header"/>
-    
-    
-    <android.support.v4.widget.SwipeRefreshLayout
+
+    <com.woxthebox.draglistview.DragItemRecyclerView
+        android:id="@+id/recycler"
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="match_parent">
-
-
-
-
-        <com.woxthebox.draglistview.DragItemRecyclerView
-            android:id="@+id/recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="vertical|horizontal" />
-
-    </android.support.v4.widget.SwipeRefreshLayout>
-    
-    
-
-
+        android:layout_height="match_parent"
+        android:scrollbars="vertical|horizontal" />
 </LinearLayout>

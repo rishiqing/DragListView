@@ -53,7 +53,7 @@ public abstract class DragPager {
                 boardView.mDragStartColumn = boardView.getColumnOfList(recyclerView);
                 boardView.mDragStartRow = itemPosition;
                 boardView.mCurrentHolder = holder;
-                boardView.mDragItem.setOffset(holder.root.getX(), holder.recyclerView.getY());
+                boardView.mDragItem.setOffset(boardView.getItemParentView(holder).getX(), holder.recyclerView.getY());
                 if (boardView.mBoardListener != null) {
                     boardView.mBoardListener.onItemDragStarted(boardView.mDragStartColumn, boardView.mDragStartRow);
                 }
