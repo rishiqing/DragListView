@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.woxthebox.draglistview.BoardView;
 import com.woxthebox.draglistview.DragItemRecyclerView;
 import com.woxthebox.draglistview.DragPager;
+import com.woxthebox.draglistview.PageHolder;
 
 import java.util.ArrayList;
 import java.util.List;

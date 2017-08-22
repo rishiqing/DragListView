@@ -81,8 +81,8 @@ public class ListSwipeItem extends RelativeLayout {
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.ListSwipeItem);
 
         mSwipeViewId = a.getResourceId(R.styleable.ListSwipeItem_swipeViewId, -1);
-        mLeftViewId = a.getResourceId(R.styleable.ListSwipeItem_leftViewId, -1);
-        mRightViewId = a.getResourceId(R.styleable.ListSwipeItem_rightViewId, -1);
+        mLeftViewId = a.getResourceId(R.styleable.ListSwipeItem_leftViewKey, -1);
+        mRightViewId = a.getResourceId(R.styleable.ListSwipeItem_rightViewKey, -1);
 
         a.recycle();
     }

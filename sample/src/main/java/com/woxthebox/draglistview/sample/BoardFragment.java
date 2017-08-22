@@ -62,7 +62,6 @@ public class BoardFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.board_layout, container, false);
-
         mBoardView = (BoardView) view.findViewById(R.id.board_view);
         mBoardView.setSnapToColumnsWhenScrolling(true);
         mBoardView.setSnapToColumnWhenDragging(true);
@@ -70,6 +69,7 @@ public class BoardFragment extends Fragment {
         mBoardView.setCustomDragItem(new MyDragItem(getActivity(), R.layout.column_item));
         dragPager = new MyDragPager(getContext());
         mBoardView.setDragPager(dragPager);
+
         mBoardView.setBoardListener(new BoardView.BoardListener() {
             @Override
             public void onItemDragStarted(int column, int row) {
@@ -177,10 +177,8 @@ public class BoardFragment extends Fragment {
             ((TextView) dragView.findViewById(R.id.text)).setText(text);
             CardView dragCard = ((CardView) dragView.findViewById(R.id.card));
             CardView clickedCard = ((CardView) clickedView.findViewById(R.id.card));
-
             dragCard.setMaxCardElevation(40);
             dragCard.setCardElevation(clickedCard.getCardElevation());
-            // I know the dragView is a FrameLayout and that is why I can use setForeground below api level 23
             dragCard.setForeground(clickedView.getResources().getDrawable(R.drawable.card_view_drag_foreground));
         }
 

@@ -2,7 +2,7 @@
 <resources>
     <declare-styleable name="ListSwipeItem">
         <attr name="swipeViewId" format="integer"/>
-        <attr name="leftViewId" format="integer"/>
-        <attr name="rightViewId" format="integer"/>
+        <attr name="leftViewKey" format="integer"/>
+        <attr name="rightViewKey" format="integer"/>
     </declare-styleable>
 </resources>

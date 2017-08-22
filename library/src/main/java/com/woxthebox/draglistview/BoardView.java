@@ -31,6 +31,7 @@ import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.Scroller;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -54,7 +55,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     private GestureDetector mGestureDetector;
     private FrameLayout mRootLayout;
     protected LinearLayout mColumnLayout;
-    protected ArrayList<DragPager.PageHolder> mLists = new ArrayList<>();
+    protected ArrayList<PageHolder> mLists = new ArrayList<>();
     protected DragItemRecyclerView mCurrentRecyclerView;
     protected DragItem mDragItem;
     protected BoardListener mBoardListener;
@@ -73,7 +74,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
 
     private DragPager dragPager;
-    private SparseArray<DragPager.PageHolder> cachePage = new SparseArray<>();
+    private SparseArray<PageHolder> cachePage = new SparseArray<>();
 
 
     public void setDragPager(DragPager dragPager) {
@@ -214,7 +215,6 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         } else {
 
 
-
             super.computeScroll();
         }
     }
@@ -285,7 +285,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     }
 
     private DragItemRecyclerView getCurrentRecyclerView(float x) {
-        for (DragPager.PageHolder list : mLists) {
+        for (PageHolder list : mLists) {
             View parent = list.root;
             if (parent.getLeft() <= x && parent.getRight() > x) {
                 return list.recyclerView;
@@ -360,7 +360,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
     public int getItemCount() {
         int count = 0;
-        for (DragPager.PageHolder list : mLists) {
+        for (PageHolder list : mLists) {
             count += list.recyclerView.getAdapter().getItemCount();
         }
         return count;
@@ -488,7 +488,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     public void setDragEnabled(boolean enabled) {
         mDragEnabled = enabled;
         if (mLists.size() > 0) {
-            for (DragPager.PageHolder list : mLists) {
+            for (PageHolder list : mLists) {
                 list.recyclerView.setDragEnabled(mDragEnabled);
             }
         }
@@ -607,15 +607,20 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     }
 
 
-    public DragPager.PageHolder addPage(int index) {
-        DragPager.PageHolder holder = cachePage.get(index);
+    public PageHolder addPage(int index) {
+        PageHolder holder = cachePage.get(index);
         if (holder != null) {
             return cachePage.get(index);
         }
-        DragPager.PageHolder pageHolder = dragPager.addColumnList(index);
+        PageHolder pageHolder = dragPager.addColumnList(index);
+        if (index == 0) {
+            TextView textView = new TextView(getContext());
+            textView.setLayoutParams(new FrameLayout.LayoutParams(mColumnWidth, FrameLayout.LayoutParams.MATCH_PARENT));
+            mColumnLayout.addView(textView, index);
+        }
         pageHolder.root.setLayoutParams(new FrameLayout.LayoutParams(mColumnWidth, FrameLayout.LayoutParams.MATCH_PARENT));
         mLists.add(pageHolder);
-        mColumnLayout.addView(pageHolder.root, index);
+        mColumnLayout.addView(pageHolder.root, index + 1);
         cachePage.put(index, pageHolder);
         return pageHolder;
     }

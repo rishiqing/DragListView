@@ -22,11 +22,6 @@ public abstract class DragPager {
 
     protected BoardView boardView;
 
-    public class PageHolder {
-        public ViewGroup root;
-        public DragItemRecyclerView recyclerView;
-    }
-
 
     public void setBoardView(BoardView boardView) {
         this.boardView = boardView;
@@ -34,7 +29,7 @@ public abstract class DragPager {
 
 
     public void notifyData() {
-//        boardView.notifyData(0);
+        boardView.notifyData(0);
     }
 
     public PageHolder addColumnList(int index) {
