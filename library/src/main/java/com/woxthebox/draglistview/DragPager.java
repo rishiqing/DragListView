@@ -38,6 +38,7 @@ public abstract class DragPager {
     }
 
     public void initRecycler(final BoardView boardView, DragItemAdapter adapter, final PageHolder holder) {
+        holder.measureListDistance();
         final DragItemRecyclerView recyclerView = holder.recyclerView;
         recyclerView.setHorizontalScrollBarEnabled(false);
         recyclerView.setVerticalScrollBarEnabled(false);
@@ -86,7 +87,7 @@ public abstract class DragPager {
         adapter.setDragStartedListener(new DragItemAdapter.DragStartCallback() {
             @Override
             public boolean startDrag(View itemView, long itemId) {
-                holder.measureListDistance();
+
                 return recyclerView.startDrag(holder, itemView, itemId, boardView.getListTouchX(holder), boardView.getListTouchY(holder));
             }
 

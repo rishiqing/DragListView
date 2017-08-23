@@ -29,6 +29,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
+import static android.R.attr.x;
+
 public class DragItemRecyclerView extends RecyclerView implements AutoScroller.AutoScrollListener {
 
     private PageHolder pageHolder;
@@ -391,7 +393,8 @@ public class DragItemRecyclerView extends RecyclerView implements AutoScroller.A
         return true;
     }
 
-    void onDragging(float x, float y) {
+    void onDragging(PageHolder pageHolder, float x, float y) {
+        this.pageHolder = pageHolder;
         if (mDragState == DragState.DRAG_ENDED) {
             return;
         }

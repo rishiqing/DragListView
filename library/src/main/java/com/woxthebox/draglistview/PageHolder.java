@@ -2,6 +2,7 @@ package com.woxthebox.draglistview;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 public class PageHolder {
     public ViewGroup root;
@@ -11,6 +12,18 @@ public class PageHolder {
 
     //    测量item的位置
     public void measureListDistance() {
+        ViewTreeObserver vto = root.getViewTreeObserver();
+        vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                measure();
+                return true;
+            }
+        });
+    }
+
+
+    private void measure() {
         int topY = getListTopY();
         int parentY = getParentY();
         int rootY = getRootY();

@@ -118,7 +118,7 @@ public class DragListView extends FrameLayout {
         if (isDragging()) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_MOVE:
-                    mRecyclerView.onDragging(event.getX(), event.getY());
+                    mRecyclerView.onDragging(null,event.getX(), event.getY());
                     break;
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL:
