@@ -35,12 +35,14 @@ import android.widget.Scroller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import static android.support.v7.widget.RecyclerView.NO_POSITION;
 
 public class BoardView extends HorizontalScrollView implements AutoScroller.AutoScrollListener {
 
+
+    private int width;
+    private int page_margin;
 
     public interface BoardListener {
         void onItemDragStarted(int column, int row);
@@ -101,10 +103,13 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         Resources res = getResources();
         boolean isPortrait = res.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
         if (isPortrait) {
-            mColumnWidth = (int) (res.getDisplayMetrics().widthPixels * 0.87);
+            width = res.getDisplayMetrics().widthPixels;
+            mColumnWidth = (int) (width * 0.87);
+            page_margin = (width - mColumnWidth) / 2;
         } else {
             mColumnWidth = (int) (res.getDisplayMetrics().density * 320);
         }
+
 
         mGestureDetector = new GestureDetector(getContext(), new GestureListener());
         mScroller = new Scroller(getContext(), new DecelerateInterpolator(1.1f));
@@ -120,7 +125,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         mColumnLayout.setOrientation(LinearLayout.HORIZONTAL);
         mColumnLayout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
         mColumnLayout.setMotionEventSplittingEnabled(false);
-
+        mColumnLayout.setPadding(page_margin, 0, page_margin, 0);
         mRootLayout.addView(mColumnLayout);
         mRootLayout.addView(mDragItem.getDragItemView());
         addView(mRootLayout);
@@ -215,9 +220,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
             ViewCompat.postInvalidateOnAnimation(this);
         } else {
-
-
-            super.computeScroll();
+//            super.computeScroll();
         }
     }
 
@@ -305,7 +308,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         for (int i = 0; i < mLists.size(); i++) {
             RecyclerView tmpList = mLists.get(i).recyclerView;
             if (tmpList == list) {
-                column = mColumnLayout.indexOfChild(mLists.get(i).root);
+                column = findIndexByItem(mLists.get(i).root);
             }
         }
         return column;
@@ -315,10 +318,14 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         for (int i = 0; i < mLists.size(); i++) {
             View parent = mLists.get(i).root;
             if (parent.getLeft() <= posX && parent.getRight() > posX) {
-                return mColumnLayout.indexOfChild(parent);
+                return findIndexByItem(parent);
             }
         }
         return 0;
+    }
+
+    private int findIndexByItem(View parent) {
+        return mColumnLayout.indexOfChild(parent);
     }
 
     private int getClosestColumn() {
@@ -330,7 +337,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
             int diffX = Math.abs(listPosX + mColumnWidth / 2 - middlePosX);
             if (diffX < minDiffX) {
                 minDiffX = diffX;
-                column = mColumnLayout.indexOfChild(mLists.get(i).root);
+                column = findIndexByItem(mLists.get(i).root);
             }
         }
         return column;
@@ -360,7 +367,8 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
     public DragItemAdapter getAdapter(int column) {
         if (column >= 0 && column < mLists.size()) {
-            return (DragItemAdapter) mLists.get(column).recyclerView.getAdapter();
+            IPageModel item = dragPager.getItem(column);
+            return (DragItemAdapter) cachePage.get(getKey(item)).recyclerView.getAdapter();
         }
         return null;
     }
@@ -460,7 +468,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         View parent = cachePage.get(getKey((IPageModel) dragPager.getItem(column))).root;
         int newX = parent.getLeft() - (getMeasuredWidth() - parent.getMeasuredWidth()) / 2;
         int maxScroll = mRootLayout.getMeasuredWidth() - getMeasuredWidth();
-//        newX = newX < 0 ? 0 : newX;
+        newX = newX < 0 ? 0 : newX;
         newX = newX > maxScroll ? maxScroll : newX;
         if (getScrollX() != newX) {
             mScroller.forceFinished(true);
@@ -601,7 +609,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         IPageModel object = (IPageModel) dragPager.getItem(index);
         cachePage.remove(getKey(object));
         mLists.remove(object);
-        mColumnLayout.removeViewAt(index);
+        mColumnLayout.removeViewAt(getRealIndex(index));
         addPage(index);
     }
 
@@ -612,6 +620,9 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
 
     public void notifyData(int index) {
+
+
+
         this.currectPager = index;
         addPage(currectPager);
         int pageUp = currectPager - 1;
@@ -632,6 +643,8 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
 
     public PageHolder addPage(int index) {
+
+
         IPageModel object = (IPageModel) dragPager.getItem(index);
         PageHolder holder = cachePage.get(getKey(object));
         if (holder != null) {
@@ -640,7 +653,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         PageHolder pageHolder = dragPager.addColumnList(index);
         pageHolder.root.setLayoutParams(new FrameLayout.LayoutParams(mColumnWidth, FrameLayout.LayoutParams.MATCH_PARENT));
         mLists.add(pageHolder);
-        mColumnLayout.addView(pageHolder.root, index);
+        mColumnLayout.addView(pageHolder.root, getRealIndex(index));
         cachePage.put(getKey(object), pageHolder);
         return pageHolder;
     }
@@ -649,6 +662,9 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         return object.getKey();
     }
 
+    private int getRealIndex(int index) {
+        return index;
+    }
 
     public View getItemParentView(PageHolder holder) {
         return holder.root;
