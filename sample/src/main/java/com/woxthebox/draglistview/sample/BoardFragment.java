@@ -41,12 +41,15 @@ import com.woxthebox.draglistview.DragItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.R.attr.data;
+
 public class BoardFragment extends Fragment implements View.OnClickListener {
 
     private static int sCreatedItems = 0;
     private BoardView mBoardView;
     private int mColumns;
     private MyDragPager dragPager;
+    private DragPagerController controller;
 
     public static BoardFragment newInstance() {
         return new BoardFragment();
@@ -67,7 +70,14 @@ public class BoardFragment extends Fragment implements View.OnClickListener {
         mBoardView.setSnapDragItemToTouch(true);
         mBoardView.setCustomDragItem(new MyDragItem(getActivity(), R.layout.column_item));
         dragPager = new MyDragPager(getActivity());
-        mBoardView.setDragPager(dragPager);
+        controller = new DragPagerController(getActivity());
+        MyDragTwoPager two = new MyDragTwoPager(getActivity());
+        controller.regester(PageModel.class, dragPager);
+        controller.regester(MyDragTwoPager.class, two);
+
+
+
+        mBoardView.setDragPager(controller);
 
         mBoardView.setBoardListener(new BoardView.BoardListener() {
             @Override
@@ -106,12 +116,14 @@ public class BoardFragment extends Fragment implements View.OnClickListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        List<PageModel> data = new ArrayList<>();
+        List data = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
             data.add(addColumnList());
         }
-        dragPager.setData(data);
-        dragPager.notifyData();
+
+
+        data.add(new MyDragTwoPager(getActivity()));
+        controller.setData(data);
     }
 
     @Override
@@ -166,8 +178,9 @@ public class BoardFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         PageModel list = addColumnList();
-        dragPager.addItem(list);
-        mBoardView.notifyItemInsert(dragPager.getPagerCount() - 2);
+        controller.addItem(list);
+        mBoardView.notifyItemInsert(controller.getPagerCount() - 1);
+//        mBoardView.notifyItemInsert(list);
     }
 
 

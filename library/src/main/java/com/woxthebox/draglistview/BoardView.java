@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.R.attr.dropDownWidth;
 import static android.R.attr.left;
 import static android.support.v7.widget.RecyclerView.NO_POSITION;
 
@@ -83,7 +84,6 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
     private DragPager dragPager;
     private SparseArray<PageHolder> cachePage = new SparseArray<>();
-    private Map<Object, Integer> keyMap = new HashMap<>();
 
     public void setDragPager(DragPager dragPager) {
         this.dragPager = dragPager;
@@ -468,10 +468,10 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         }
         notifyData(column);
         View parent = cachePage.get(getKey(dragPager.getItem(column))).root;
-        int left = (column == 0) ? 0 : column * mColumnWidth + page_margin;
-//        int left1 = parent.getLeft();
-        int newX = left - (getMeasuredWidth() - parent.getMeasuredWidth()) / 2;
-        int maxScroll = mRootLayout.getMeasuredWidth() - getMeasuredWidth();
+        int left = getPageLeftX(column);
+        int newX = left - (getMeasuredWidth() - mColumnWidth) / 2;
+        int mrootWidth = getContentWidth();
+        int maxScroll = mrootWidth - getMeasuredWidth();
         newX = newX < 0 ? 0 : newX;
         newX = newX > maxScroll ? maxScroll : newX;
         if (getScrollX() != newX) {
@@ -486,6 +486,14 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
     }
 
+    private int getPageLeftX(int column) {
+        return (column == 0) ? 0 : column * mColumnWidth + page_margin;
+    }
+
+    private int getContentWidth() {
+        return dragPager.getPagerCount() * mColumnWidth + page_margin * 2;
+    }
+
     public void clearBoard() {
         int count = mLists.size();
         for (int i = count - 1; i >= 0; i--) {
@@ -497,6 +505,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     public void removeColumn(int column) {
         if (column >= 0 && mLists.size() > column) {
             mColumnLayout.removeViewAt(column);
+            cachePage.remove(getKey(dragPager.getItem(column)));
             mLists.remove(column);
         }
     }
@@ -652,8 +661,10 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         }
         PageHolder pageHolder = dragPager.addColumnList(index);
         pageHolder.root.setLayoutParams(new FrameLayout.LayoutParams(mColumnWidth, FrameLayout.LayoutParams.MATCH_PARENT));
-        mLists.add(pageHolder);
         mColumnLayout.addView(pageHolder.root, getRealIndex(index));
+        if (pageHolder.recyclerView != null) {
+            mLists.add(pageHolder);
+        }
         cachePage.put(getKey(object), pageHolder);
         return pageHolder;
     }
