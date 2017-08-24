@@ -252,7 +252,10 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         // Updated event to scrollview coordinates
         PageHolder holder = getCurrentRecyclerView(mTouchX + getScrollX());
         DragItemRecyclerView currentList = holder.recyclerView;
-        if (mCurrentHolder.recyclerView != currentList) {
+        if (currentList == null) {
+            return;
+        }
+        if (currentList != null && mCurrentHolder.recyclerView != currentList) {
             int oldColumn = getColumnOfList(mCurrentHolder.recyclerView);
             int newColumn = getColumnOfList(currentList);
             long itemId = mCurrentHolder.recyclerView.getDragItemId();
