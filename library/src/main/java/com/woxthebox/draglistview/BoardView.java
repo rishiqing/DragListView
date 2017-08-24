@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.R.attr.left;
 import static android.support.v7.widget.RecyclerView.NO_POSITION;
 
 public class BoardView extends HorizontalScrollView implements AutoScroller.AutoScrollListener {
@@ -43,6 +44,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
     private int width;
     private int page_margin;
+    private int insertX;
 
     public interface BoardListener {
         void onItemDragStarted(int column, int row);
@@ -465,8 +467,10 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
             return;
         }
         notifyData(column);
-        View parent = cachePage.get(getKey((IPageModel) dragPager.getItem(column))).root;
-        int newX = parent.getLeft() - (getMeasuredWidth() - parent.getMeasuredWidth()) / 2;
+        View parent = cachePage.get(getKey(dragPager.getItem(column))).root;
+        int left = (column == 0) ? 0 : column * mColumnWidth + page_margin;
+//        int left1 = parent.getLeft();
+        int newX = left - (getMeasuredWidth() - parent.getMeasuredWidth()) / 2;
         int maxScroll = mRootLayout.getMeasuredWidth() - getMeasuredWidth();
         newX = newX < 0 ? 0 : newX;
         newX = newX > maxScroll ? maxScroll : newX;
@@ -479,6 +483,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
                 scrollTo(newX, getScrollY());
             }
         }
+
     }
 
     public void clearBoard() {
@@ -606,7 +611,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     protected int currectPager = 0;
 
     public void notifyItem(int index) {
-        IPageModel object = (IPageModel) dragPager.getItem(index);
+        IPageModel object = dragPager.getItem(index);
         cachePage.remove(getKey(object));
         mLists.remove(object);
         mColumnLayout.removeViewAt(getRealIndex(index));
@@ -614,15 +619,12 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     }
 
 
-    public void notifyItemInsert(int index) {
-        addPage(index);
+    public void notifyItemInsert(final int index) {
+        scrollToColumn(index, true);
     }
 
 
     public void notifyData(int index) {
-
-
-
         this.currectPager = index;
         addPage(currectPager);
         int pageUp = currectPager - 1;
@@ -643,9 +645,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
 
     public PageHolder addPage(int index) {
-
-
-        IPageModel object = (IPageModel) dragPager.getItem(index);
+        IPageModel object = dragPager.getItem(index);
         PageHolder holder = cachePage.get(getKey(object));
         if (holder != null) {
             return cachePage.get(getKey(object));

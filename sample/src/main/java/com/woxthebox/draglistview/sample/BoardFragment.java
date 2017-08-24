@@ -99,9 +99,6 @@ public class BoardFragment extends Fragment implements View.OnClickListener {
         view.findViewById(R.id.addClum).setOnClickListener(this);
 
 
-
-
-
         return view;
     }
 
@@ -157,7 +154,7 @@ public class BoardFragment extends Fragment implements View.OnClickListener {
     String text = "Item ";
 
     private PageModel addColumnList() {
-        PageModel  mItemArray = new PageModel();
+        PageModel mItemArray = new PageModel();
         int addItems = 15;
         for (int i = 0; i < addItems; i++) {
             long id = sCreatedItems++;
@@ -168,12 +165,10 @@ public class BoardFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-//        ArrayList<Pair<Long, String>> list =  addColumnList();
-//        dragPager.addItem(0,list);
-//        mBoardView.scrollToColumn(dragPager.getPagerCount()-1, false);
+        PageModel list = addColumnList();
+        dragPager.addItem(list);
+        mBoardView.notifyItemInsert(dragPager.getPagerCount() - 2);
     }
-
-
 
 
     private static class MyDragItem extends DragItem {
