@@ -99,6 +99,9 @@ public class BoardFragment extends Fragment implements View.OnClickListener {
         view.findViewById(R.id.addClum).setOnClickListener(this);
 
 
+
+
+
         return view;
     }
 
