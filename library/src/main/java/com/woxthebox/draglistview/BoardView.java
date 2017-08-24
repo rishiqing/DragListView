@@ -19,6 +19,7 @@ package com.woxthebox.draglistview;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -33,11 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.Scroller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-import static android.R.attr.dropDownWidth;
-import static android.R.attr.left;
 import static android.support.v7.widget.RecyclerView.NO_POSITION;
 
 public class BoardView extends HorizontalScrollView implements AutoScroller.AutoScrollListener {
@@ -319,8 +316,11 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     private int getCurrentColumn(float posX) {
         for (int i = 0; i < mLists.size(); i++) {
             View parent = mLists.get(i).root;
-            if (parent.getLeft() <= posX && parent.getRight() > posX) {
-                return findIndexByItem(parent);
+            int index = findIndexByItem(parent);
+            int left = getPageLeftX(index);
+            int right = left + mColumnWidth;
+            if (left <= posX && right > posX) {
+                return index;
             }
         }
         return 0;
@@ -505,8 +505,10 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     public void removeColumn(int column) {
         if (column >= 0 && mLists.size() > column) {
             mColumnLayout.removeViewAt(column);
-            cachePage.remove(getKey(dragPager.getItem(column)));
-            mLists.remove(column);
+            int key = getKey(dragPager.getItem(column));
+            PageHolder holder = cachePage.get(key);
+            cachePage.remove(key);
+            mLists.remove(holder);
         }
     }
 
@@ -662,9 +664,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         PageHolder pageHolder = dragPager.addColumnList(index);
         pageHolder.root.setLayoutParams(new FrameLayout.LayoutParams(mColumnWidth, FrameLayout.LayoutParams.MATCH_PARENT));
         mColumnLayout.addView(pageHolder.root, getRealIndex(index));
-        if (pageHolder.recyclerView != null) {
-            mLists.add(pageHolder);
-        }
+        mLists.add(pageHolder);
         cachePage.put(getKey(object), pageHolder);
         return pageHolder;
     }

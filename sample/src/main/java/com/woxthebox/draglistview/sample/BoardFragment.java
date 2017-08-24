@@ -76,7 +76,6 @@ public class BoardFragment extends Fragment implements View.OnClickListener {
         controller.regester(MyDragTwoPager.class, two);
 
 
-
         mBoardView.setDragPager(controller);
 
         mBoardView.setBoardListener(new BoardView.BoardListener() {
@@ -178,9 +177,9 @@ public class BoardFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         PageModel list = addColumnList();
-        controller.addItem(list);
-        mBoardView.notifyItemInsert(controller.getPagerCount() - 1);
-//        mBoardView.notifyItemInsert(list);
+        int index = controller.getPagerCount() - 1;
+        controller.addItem(index, list);
+        mBoardView.notifyItemInsert(index);
     }
 
 
