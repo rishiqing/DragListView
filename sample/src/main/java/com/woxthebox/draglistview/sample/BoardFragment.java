@@ -109,7 +109,7 @@ public class BoardFragment extends Fragment implements View.OnClickListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        List<ArrayList<Pair<Long, String>>> data = new ArrayList<>();
+        List<PageModel> data = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
             data.add(addColumnList());
         }
@@ -156,8 +156,8 @@ public class BoardFragment extends Fragment implements View.OnClickListener {
 
     String text = "Item ";
 
-    private ArrayList<Pair<Long, String>> addColumnList() {
-        final ArrayList<Pair<Long, String>> mItemArray = new ArrayList<>();
+    private PageModel addColumnList() {
+        PageModel  mItemArray = new PageModel();
         int addItems = 15;
         for (int i = 0; i < addItems; i++) {
             long id = sCreatedItems++;
@@ -168,10 +168,13 @@ public class BoardFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        ArrayList<Pair<Long, String>> list =  addColumnList();
-        dragPager.addItem(list);
+//        ArrayList<Pair<Long, String>> list =  addColumnList();
+//        dragPager.addItem(0,list);
 //        mBoardView.scrollToColumn(dragPager.getPagerCount()-1, false);
     }
+
+
+
 
     private static class MyDragItem extends DragItem {
 

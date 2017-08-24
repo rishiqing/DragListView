@@ -14,10 +14,10 @@ import static android.support.v7.widget.RecyclerView.NO_POSITION;
  * 邮箱：husongzhen@musikid.com
  */
 
-public abstract class DragPager {
+public abstract class DragPager<T extends IPageModel> {
     public abstract int getPagerCount();
 
-    public abstract Object getItem(int index);
+    public abstract T getItem(int index);
 
 
     protected BoardView boardView;
@@ -29,6 +29,7 @@ public abstract class DragPager {
 
 
     public void notifyData() {
+
         boardView.notifyData(0);
     }
 

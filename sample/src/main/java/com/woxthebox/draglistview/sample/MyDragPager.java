@@ -14,23 +14,32 @@ import com.woxthebox.draglistview.PageHolder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.R.id.list;
+
 /**
  * 作者：husongzhen on 17/7/12 15:46
  * 邮箱：husongzhen@musikid.com
  */
 
-public class MyDragPager extends DragPager {
+public class MyDragPager extends DragPager<PageModel> {
 
 
-    private List<ArrayList<Pair<Long, String>>> data = new ArrayList<>();
+    private List<PageModel> data = new ArrayList<>();
 
-    public void setData(List<ArrayList<Pair<Long, String>>> data) {
+    public void setData(List<PageModel> data) {
         this.data = data;
     }
 
 
-    public void addItem(ArrayList<Pair<Long, String>> list){
+    public void addItem(PageModel list) {
         data.add(list);
+        boardView.notifyData(data.size() - 1);
+    }
+
+
+    public void addItem(int index, PageModel list) {
+        data.add(index, list);
+        boardView.notifyItemInsert(index);
     }
 
 
@@ -46,7 +55,7 @@ public class MyDragPager extends DragPager {
     }
 
     @Override
-    public Object getItem(int index) {
+    public PageModel getItem(int index) {
         return data.get(index);
     }
 
@@ -57,7 +66,7 @@ public class MyDragPager extends DragPager {
         ((TextView) pageHolder.root.findViewById(R.id.text)).setText("Column ");
         ((TextView) pageHolder.root.findViewById(R.id.item_count)).setText("");
         pageHolder.recyclerView = (DragItemRecyclerView) pageHolder.root.findViewById(R.id.recycler);
-        ItemAdapter listAdapter = new ItemAdapter(data.get(index), R.layout.column_item, R.id.item_layout, true);
+        ItemAdapter listAdapter = new ItemAdapter(data.get(index).getList(), R.layout.column_item, R.id.item_layout, true);
         initRecycler(boardView, listAdapter, pageHolder);
         return pageHolder;
     }
