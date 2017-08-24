@@ -41,7 +41,7 @@ import com.woxthebox.draglistview.DragItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BoardFragment extends Fragment {
+public class BoardFragment extends Fragment implements View.OnClickListener {
 
     private static int sCreatedItems = 0;
     private BoardView mBoardView;
@@ -95,6 +95,10 @@ public class BoardFragment extends Fragment {
                 }
             }
         });
+
+        view.findViewById(R.id.addClum).setOnClickListener(this);
+
+
         return view;
     }
 
@@ -103,7 +107,7 @@ public class BoardFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         List<ArrayList<Pair<Long, String>>> data = new ArrayList<>();
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 2; i++) {
             data.add(addColumnList());
         }
         dragPager.setData(data);
@@ -135,7 +139,7 @@ public class BoardFragment extends Fragment {
                 getActivity().invalidateOptionsMenu();
                 return true;
             case R.id.action_add_column:
-                addColumnList();
+
                 return true;
             case R.id.action_remove_column:
                 mBoardView.removeColumn(0);
@@ -154,16 +158,16 @@ public class BoardFragment extends Fragment {
         int addItems = 15;
         for (int i = 0; i < addItems; i++) {
             long id = sCreatedItems++;
-            text += "aonOptionsItemSelectedonOptionsItemSelected";
             mItemArray.add(new Pair<>(id, text + id));
         }
-
         return mItemArray;
+    }
 
-
-//        final ItemAdapter listAdapter = new ItemAdapter(mItemArray, R.layout.column_item, R.id.item_layout, true);
-//        mBoardView.addColumnList(listAdapter);
-//        mColumns++;
+    @Override
+    public void onClick(View v) {
+        ArrayList<Pair<Long, String>> list =  addColumnList();
+        dragPager.addItem(list);
+//        mBoardView.scrollToColumn(dragPager.getPagerCount()-1, false);
     }
 
     private static class MyDragItem extends DragItem {

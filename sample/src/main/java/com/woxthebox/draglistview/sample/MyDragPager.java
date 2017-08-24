@@ -28,6 +28,12 @@ public class MyDragPager extends DragPager {
         this.data = data;
     }
 
+
+    public void addItem(ArrayList<Pair<Long, String>> list){
+        data.add(list);
+    }
+
+
     private Context context;
 
     public MyDragPager(Context context) {
