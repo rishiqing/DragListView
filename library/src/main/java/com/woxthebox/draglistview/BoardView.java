@@ -19,7 +19,6 @@ package com.woxthebox.draglistview;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Rect;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -27,6 +26,7 @@ import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
@@ -38,7 +38,8 @@ import java.util.ArrayList;
 import static android.support.v7.widget.RecyclerView.NO_POSITION;
 
 public class BoardView extends HorizontalScrollView implements AutoScroller.AutoScrollListener {
-
+   private float minMove = 120;
+    private float minVelocity = 0;
 
     private int width;
     private int page_margin;
@@ -53,6 +54,19 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
         void onItemDragEnded(int fromColumn, int fromRow, int toColumn, int toRow);
     }
+
+
+    public interface OnPageChangeListener {
+        void onPageChangeListener(int pos);
+    }
+
+
+    private OnPageChangeListener pageChangeListener;
+
+    public void setPageChangeListener(OnPageChangeListener pageChangeListener) {
+        this.pageChangeListener = pageChangeListener;
+    }
+
 
     private static final int SCROLL_ANIMATION_DURATION = 425;
     private Scroller mScroller;
@@ -128,6 +142,11 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         mRootLayout.addView(mColumnLayout);
         mRootLayout.addView(mDragItem.getDragItemView());
         addView(mRootLayout);
+
+
+        final ViewConfiguration configuration = ViewConfiguration.get(getContext());
+        minMove = configuration.getScaledTouchSlop();
+        minVelocity = configuration.getScaledMinimumFlingVelocity();
     }
 
     @Override
@@ -189,6 +208,8 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
                         mScroller.forceFinished(true);
                     }
                     break;
+
+
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL:
                     if (snapToColumnWhenScrolling()) {
@@ -219,7 +240,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
             ViewCompat.postInvalidateOnAnimation(this);
         } else {
-//            super.computeScroll();
+            super.computeScroll();
         }
     }
 
@@ -501,6 +522,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         int count = mLists.size();
         for (int i = count - 1; i >= 0; i--) {
             mColumnLayout.removeViewAt(i);
+            cachePage.clear();
             mLists.remove(i);
         }
     }
@@ -590,6 +612,7 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
         private float mStartScrollX;
 
+
         @Override
         public boolean onDown(MotionEvent e) {
             mStartScrollX = getScrollX();
@@ -599,9 +622,15 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             // Calc new column to scroll to
+            float beginX = e1.getX();
+            float endX = e2.getX();
+            float beginY = e1.getY();
+            float endY = e2.getY();
             int currentColumn = getCurrentColumn(e2.getX() + getScrollX());
             int newColumn;
-            if (Math.abs(velocityY) >= Math.abs(velocityX)) {
+            if (beginY - endY > minMove && Math.abs(velocityY) > minVelocity &&
+                    beginY - endY > minMove && Math.abs(velocityY) > minVelocity &&
+                    Math.abs(velocityY) >= Math.abs(velocityX)) {
                 newColumn = currentColumn;
             } else {
                 if (velocityX < 0) {
@@ -655,6 +684,12 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         if (pageDown < dragPager.getPagerCount()) {
             addPage(pageDown);
         }
+
+
+        if (pageChangeListener != null) {
+            pageChangeListener.onPageChangeListener(index);
+        }
+
     }
 
 
