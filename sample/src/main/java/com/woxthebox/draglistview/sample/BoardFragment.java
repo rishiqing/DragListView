@@ -22,7 +22,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,8 +39,6 @@ import com.woxthebox.draglistview.DragItem;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.R.attr.data;
 
 public class BoardFragment extends Fragment implements View.OnClickListener {
 
@@ -176,8 +173,9 @@ public class BoardFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        int currect = mBoardView.getCurrectPager();
         PageModel list = addColumnList();
-        int index = controller.getPagerCount() - 1;
+        int index = currect + 1;
         controller.addItem(index, list);
         mBoardView.notifyItemInsert(index);
     }

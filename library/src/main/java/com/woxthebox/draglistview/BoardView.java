@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import static android.support.v7.widget.RecyclerView.NO_POSITION;
 
 public class BoardView extends HorizontalScrollView implements AutoScroller.AutoScrollListener {
-   private float minMove = 120;
+    private float minMove = 120;
     private float minVelocity = 0;
 
     private int width;
@@ -717,5 +717,10 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
 
     public View getItemParentView(PageHolder holder) {
         return holder.root;
+    }
+
+
+    public int getCurrectPager() {
+        return currectPager;
     }
 }

@@ -1,8 +1,9 @@
 apply plugin: 'com.android.library'
+apply from: 'maven.gradle'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 11
@@ -27,4 +28,3 @@ dependencies {
     testCompile 'com.squareup.assertj:assertj-android:1.0.0'
 }
 
-apply from: 'maven-publish.gradle'
