@@ -1,6 +1,7 @@
 package com.woxthebox.draglistview.sample;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 
@@ -20,6 +21,7 @@ import java.util.List;
 public class DragPagerController extends DragPager<IPageModel> {
 
 
+    private static final String TAG = "tag";
     private List<IPageModel> data = new ArrayList<>();
     private SparseArray<DragPagerView> cachePager = new SparseArray<>();
 
@@ -77,6 +79,7 @@ public class DragPagerController extends DragPager<IPageModel> {
 
     @Override
     protected PageHolder onCreatePager(BoardView boardView, ViewGroup pager, int index) {
+        Log.e(TAG, "onCreatePager: " + index);
         DragPagerView pagerView = cachePager.get(getItem(index).getClass().hashCode());
         if (CodeCheck.isNotNull(pagerView)) {
             return pagerView.onCreatePager(boardView, pager, index);
@@ -84,6 +87,13 @@ public class DragPagerController extends DragPager<IPageModel> {
         return null;
     }
 
+    @Override
+    protected void onScrollerFinishListener(int curectPager) {
+        super.onScrollerFinishListener(curectPager);
+
+
+
+    }
 
     public void removePage(Integer index) {
         boardView.removeColumn(index);

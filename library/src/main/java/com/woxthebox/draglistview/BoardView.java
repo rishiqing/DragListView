@@ -22,6 +22,7 @@ import android.content.res.Resources;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -223,6 +224,10 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
         }
     }
 
+
+    int tempPager = -1;
+
+
     @Override
     public void computeScroll() {
         if (!mScroller.isFinished() && mScroller.computeScrollOffset()) {
@@ -241,6 +246,31 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
             ViewCompat.postInvalidateOnAnimation(this);
         } else {
             super.computeScroll();
+            if (mScroller.isFinished() && tempPager != currectPager) {
+                tempPager = currectPager;
+                Log.e("tag", getCurrectPager() + "");
+                dragPager.onScrollerFinishListener(currectPager);
+                notifyUpdate(currectPager);
+
+            }
+        }
+    }
+
+
+    public void notifyUpdate(int index) {
+        int pageUp = currectPager - 1;
+        if (pageUp >= 0) {
+            addPage(pageUp);
+        }
+
+        int pageDown = currectPager + 1;
+        if (pageDown < dragPager.getPagerCount()) {
+            addPage(pageDown);
+        }
+
+        pageDown = currectPager + 2;
+        if (pageDown < dragPager.getPagerCount()) {
+            addPage(pageDown);
         }
     }
 
@@ -670,22 +700,20 @@ public class BoardView extends HorizontalScrollView implements AutoScroller.Auto
     public void notifyData(int index) {
         this.currectPager = index;
         addPage(currectPager);
-        int pageUp = currectPager - 1;
-        if (pageUp >= 0) {
-            addPage(pageUp);
-        }
-
-        int pageDown = currectPager + 1;
-        if (pageDown < dragPager.getPagerCount()) {
-            addPage(pageDown);
-        }
-
-        pageDown = currectPager + 2;
-        if (pageDown < dragPager.getPagerCount()) {
-            addPage(pageDown);
-        }
-
-
+//        int pageUp = currectPager - 1;
+//        if (pageUp >= 0) {
+//            addPage(pageUp);
+//        }
+////
+//        int pageDown = currectPager + 1;
+//        if (pageDown < dragPager.getPagerCount()) {
+//            addPage(pageDown);
+//        }
+//
+//        pageDown = currectPager + 2;
+//        if (pageDown < dragPager.getPagerCount()) {
+//            addPage(pageDown);
+//        }
         if (pageChangeListener != null) {
             pageChangeListener.onPageChangeListener(index);
         }

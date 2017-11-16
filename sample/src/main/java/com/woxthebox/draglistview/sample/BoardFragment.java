@@ -113,7 +113,7 @@ public class BoardFragment extends Fragment implements View.OnClickListener {
         super.onActivityCreated(savedInstanceState);
 
         List data = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 10; i++) {
             data.add(addColumnList());
         }
 

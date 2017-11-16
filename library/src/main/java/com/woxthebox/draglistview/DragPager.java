@@ -101,6 +101,12 @@ public abstract class DragPager<T extends IPageModel> {
 
 
     protected abstract PageHolder onCreatePager(BoardView boardView, ViewGroup pager, int index);
+
+
+    protected void onScrollerFinishListener(int curectPager) {
+    }
+
+
 //    {
 //        PageHolder pageHolder = new PageHolder();
 //        pageHolder.root = (ViewGroup) LayoutInflater.from(boardView.getContext()).inflate(R.layout.drag_item_recycler_view, boardView, false);
